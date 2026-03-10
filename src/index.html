@@ -1,11 +1,628 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PakePlus</title>
-    </head>
-    <body>
-        Hello World
-    </body>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>筑牢忠诚之基，精研光明之术 - 隆回县人民医院</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- 引入 GSAP JS 动画引擎 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        /* --- Apple Keynote 极简白底设计规范 --- */
+        :root {
+            --bg-main: #FFFFFF;
+            --bg-card: #F5F5F7;
+            --bg-card-dark: #1D1D1F;
+            --text-title: #1D1D1F;
+            --text-body: #86868B;
+            --text-light: #A1A1A6;
+            --text-inverse: #F5F5F7;
+            --accent-blue: #0066CC;
+            --accent-red: #E30000;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-font-smoothing: antialiased; 
+            -moz-osx-font-smoothing: grayscale; 
+            margin: 0; 
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-title);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            overflow: hidden; 
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* 幻灯片主容器 */
+        #slider-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 幻灯片页面 */
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            padding: clamp(2rem, 5vw, 6rem) clamp(3rem, 8vw, 10rem);
+            opacity: 0;
+            visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: var(--bg-main);
+            z-index: 1;
+        }
+
+        .slide.active {
+            visibility: visible;
+            z-index: 2;
+        }
+
+        /* 内容最大宽度居中 */
+        .slide-content {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* --- 响应式排版系统 --- */
+        .hero-title { 
+            font-size: clamp(3rem, 6vw, 7rem); 
+            font-weight: 800; 
+            line-height: 1.1; 
+            letter-spacing: -0.04em; 
+            margin-bottom: 1rem;
+        }
+        .sub-head { 
+            font-size: clamp(2.5rem, 4vw, 5rem); 
+            font-weight: 700; 
+            line-height: 1.2; 
+            letter-spacing: -0.02em; 
+            margin-bottom: 2rem;
+        }
+        .body-lead {
+            font-size: clamp(1.5rem, 2.5vw, 2.5rem); 
+            font-weight: 600; 
+            color: var(--text-title); 
+            margin-bottom: 1rem;
+        }
+        .body-text { 
+            font-size: clamp(1rem, 1.8vw, 1.8rem); 
+            color: var(--text-body); 
+            line-height: 1.6; 
+        }
+        .section-tag { 
+            font-size: clamp(0.8rem, 1.2vw, 1.2rem); 
+            font-weight: 700; 
+            color: var(--accent-blue); 
+            letter-spacing: 0.2em; 
+            text-transform: uppercase; 
+            margin-bottom: 1.5rem; 
+            display: block; 
+        }
+
+        /* --- 布局组件 --- */
+        .grid-2 { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: clamp(1.5rem, 3vw, 3rem); 
+            margin-top: 2rem;
+        }
+        .grid-3 { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: clamp(1rem, 2vw, 2.5rem); 
+            margin-top: 2rem;
+        }
+
+        .apple-card { 
+            background: var(--bg-card); 
+            border-radius: 24px; 
+            padding: clamp(2rem, 4vw, 4rem); 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* JS 3D Hover 效果的基础属性 */
+            transform-style: preserve-3d;
+            will-change: transform;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .apple-card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        /* 卡片内部元素的 Z 轴偏移，制造立体感 */
+        .apple-card > * {
+            transform: translateZ(30px);
+        }
+
+        .apple-card-dark {
+            background: var(--bg-card-dark);
+            color: var(--text-inverse);
+        }
+        .apple-card-dark .body-lead, .apple-card-dark .body-text {
+            color: var(--text-inverse);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 100px;
+            font-size: clamp(0.8rem, 1.2vw, 1.2rem);
+            font-weight: 600;
+            background: rgba(0, 102, 204, 0.1);
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+            width: max-content;
+        }
+
+        .icon-large {
+            font-size: clamp(3rem, 5vw, 5rem);
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- 导航控制 --- */
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            color: var(--text-title);
+            border: none;
+            font-size: 20px;
+        }
+        .nav-btn:hover { background: rgba(0, 0, 0, 0.08); transform: translateY(-50%) scale(1.05); }
+        .nav-btn.prev { left: 2vw; }
+        .nav-btn.next { right: 2vw; }
+
+        /* 进度条 */
+        #dots {
+            position: fixed;
+            bottom: 3vh;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        .dot { 
+            width: 10px; height: 10px; 
+            background: rgba(0,0,0,0.15); 
+            border-radius: 10px; 
+            cursor: pointer; 
+        }
+
+        .highlight { color: var(--accent-blue); }
+        .text-center { text-align: center; }
+        
+        /* 隐藏元素以便于 GSAP 控制入场 */
+        .gsap-item { opacity: 0; }
+    </style>
+</head>
+<body>
+
+    <!-- 导航与进度 -->
+    <button class="nav-btn prev" id="prevBtn" aria-label="上一页"><i class="fa-solid fa-chevron-left"></i></button>
+    <button class="nav-btn next" id="nextBtn" aria-label="下一页"><i class="fa-solid fa-chevron-right"></i></button>
+    <div id="dots"></div>
+
+    <div id="slider-container">
+        
+        <!-- P1: 封面页 -->
+        <div class="slide active">
+            <div class="slide-content text-center">
+                <span class="section-tag gsap-item">隆回县人民医院专题汇报</span>
+                <h1 class="hero-title gsap-item">筑牢忠诚之基<br>精研光明之术</h1>
+                <p class="body-lead gsap-item highlight" style="margin-top: 2rem;">
+                    在奋力谱写中国式现代化湖南篇章中贡献隆医力量
+                </p>
+              <div class="gsap-item" style="margin-top: 4rem;">
+    <p class="body-text" style="font-weight: 500; letter-spacing: 0.1em; color: var(--text-light); text-align: center;">
+        外科支部组织委员 &bull; 五官科门诊验光师 <br><span style="color: var(--text-title); font-weight: 700;">李晔</span>
+    </p>
+</div>
+            </div>
+        </div>
+
+        <!-- P2: 学习背景 -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="section-tag gsap-item">第一部分：开篇与背景</span>
+                <h2 class="sub-head gsap-item">精神犹如“灯塔”<br>指明改革方向。</h2>
+                <div class="grid-2">
+                    <div class="apple-card gsap-item js-tilt">
+                        <div class="badge">学习对象与方式</div>
+                        <p class="body-lead">党的二十届四中全会、省委及市委系列全会精神。</p>
+                        <p class="body-text">通过医院党委专题学习 + 个人深入自学相结合，全面领悟精神实质。</p>
+                    </div>
+                    <div class="apple-card apple-card-dark gsap-item js-tilt">
+                        <div class="badge" style="background: rgba(255,255,255,0.2); color: white;">双重身份责任</div>
+                        <p class="body-lead">身兼“党务工作者”与“临床医务人员”。</p>
+                        <p class="body-text">深感使命光荣，责任重大，将全会精神作为推动实际工作的强力引擎。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P3: 逻辑递进 -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="section-tag gsap-item">第二部分：政治引领</span>
+                <h2 class="sub-head gsap-item">从“大写意”到“工笔画”</h2>
+                <div class="grid-2" style="align-items: center;">
+                    <div class="gsap-item">
+                        <p class="body-lead" style="font-size: clamp(2rem, 3.5vw, 3.5rem);">将中央蓝图转化为湖湘、邵阳的具体实践。</p>
+                        <p class="body-text" style="margin-top: 1.5rem;">中央层面的二十届四中全会聚焦制度建设与治理现代化；落实到地方，则是精神的层层递进与具体贯彻。</p>
+                    </div>
+                    <div class="apple-card flex items-center justify-center text-center gsap-item js-tilt">
+                        <i class="fa-solid fa-map-location-dot icon-large" style="font-size: clamp(5rem, 10vw, 12rem); margin: 0; opacity: 0.9;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P4: 基层注脚 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="sub-head gsap-item">中国式现代化的基层注脚</h2>
+                <div class="grid-3">
+                    <div class="apple-card gsap-item js-tilt">
+                        <i class="fa-solid fa-microscope icon-large"></i>
+                        <p class="body-lead">医疗卫生现代化</p>
+                        <p class="body-text">通过技术革新与设备升级，实现诊疗能力的跨越。</p>
+                    </div>
+                    <div class="apple-card gsap-item js-tilt">
+                        <i class="fa-solid fa-house-medical icon-large"></i>
+                        <p class="body-lead">公共服务均等化</p>
+                        <p class="body-text">补齐民生短板，让乡亲们在家门口就能看好病。</p>
+                    </div>
+                    <div class="apple-card gsap-item js-tilt">
+                        <i class="fa-solid fa-heart-pulse icon-large"></i>
+                        <p class="body-lead">健康需求满足</p>
+                        <p class="body-text">从单一的“治病”向全生命周期的“健康管理”转变。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P5: 四个自觉 -->
+        <div class="slide">
+            <div class="slide-content text-center">
+                <span class="section-tag gsap-item">政治引领</span>
+                <h2 class="hero-title gsap-item">政治站位的<br>“四个自觉”</h2>
+                <div class="grid-2" style="grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 3rem;">
+                    <div class="apple-card text-center gsap-item js-tilt" style="padding: 2rem 1rem;"><span class="body-lead" style="margin:0;">两个确立</span></div>
+                    <div class="apple-card text-center gsap-item js-tilt" style="padding: 2rem 1rem;"><span class="body-lead" style="margin:0;">四个意识</span></div>
+                    <div class="apple-card text-center gsap-item js-tilt" style="padding: 2rem 1rem;"><span class="body-lead" style="margin:0;">四个自信</span></div>
+                    <div class="apple-card text-center gsap-item js-tilt" style="padding: 2rem 1rem;"><span class="body-lead" style="margin:0;">两个维护</span></div>
+                </div>
+                <p class="body-lead gsap-item highlight" style="margin-top: 4rem;">
+                    行动纲领：将思想统一到省委、市委对邵阳发展的定位上。
+                </p>
+            </div>
+        </div>
+
+        <!-- P6: 组织委员责任 -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="section-tag gsap-item">第三部分：党建堡垒</span>
+                <h2 class="sub-head gsap-item">发挥组织委员的“引擎”作用</h2>
+                <div class="apple-card gsap-item js-tilt" style="margin-top: 2rem;">
+                    <div style="display: flex; gap: clamp(2rem, 4vw, 4rem); align-items: center;">
+                        <i class="fa-solid fa-shield-heart icon-large" style="margin:0; font-size: clamp(6rem, 10vw, 10rem);"></i>
+                        <div>
+                            <p class="body-lead" style="font-size: clamp(2rem, 3.5vw, 3.5rem);">处于党组织联系临床一线的“最前沿”。</p>
+                            <p class="body-text" style="margin-top: 1rem;">外科系统工作强度大、风险高、节奏快，迫切需要党建为其注入强大的<span class="highlight">内生动力</span>。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P7: 三会一课 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="sub-head gsap-item">凝心聚力：创新“三会一课”</h2>
+                <div class="grid-2">
+                    <div class="apple-card gsap-item js-tilt">
+                        <div class="badge">告别枯燥</div>
+                        <p class="body-lead" style="font-size: clamp(2.5rem, 4vw, 4rem);">不再单纯读文件，而是“谈临床”。</p>
+                        <p class="body-text mt-2">结合外科真实临床案例，深度讨论深化医改背景下的手术质量控制。</p>
+                    </div>
+                    <div class="apple-card apple-card-dark gsap-item js-tilt">
+                        <div class="badge" style="background: rgba(255,255,255,0.2); color: white;">核心目标</div>
+                        <p class="body-lead" style="font-size: clamp(2.5rem, 4vw, 4rem);">一个党员就是一面旗帜。</p>
+                        <p class="body-text mt-2">优化住院流程，提升患者满意度。在急难险重任务中冲锋在前。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P8: 双培养目标 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="sub-head gsap-item">人才强院：落实“双培养”</h2>
+                <p class="body-text gsap-item" style="margin-bottom: 2rem;">密切关注外科青年医生的思想动态与业务成长。</p>
+                <div class="grid-2">
+                    <div class="apple-card text-center gsap-item js-tilt" style="background: rgba(0, 102, 204, 0.05);">
+                        <i class="fa-solid fa-user-plus icon-large"></i>
+                        <p class="body-lead highlight">把业务骨干培养成党员</p>
+                    </div>
+                    <div class="apple-card text-center gsap-item js-tilt">
+                        <i class="fa-solid fa-medal icon-large"></i>
+                        <p class="body-lead">把党员培养成业务骨干</p>
+                    </div>
+                </div>
+                <p class="body-text text-center gsap-item" style="margin-top: 3rem;">
+                    载体：组织“党员先锋岗”、“技术比武”活动，营造争先创优氛围。
+                </p>
+            </div>
+        </div>
+
+        <!-- P9: 民生温度 -->
+        <div class="slide">
+            <div class="slide-content">
+                <span class="section-tag gsap-item">第四部分：匠心强技</span>
+                <h2 class="sub-head gsap-item">验光岗位的“民生温度”</h2>
+                <div class="grid-2" style="align-items: center;">
+                    <div class="gsap-item">
+                        <p class="body-lead" style="font-size: clamp(2rem, 3.5vw, 3.5rem);">守护群众视觉质量的第一道防线。</p>
+                        <p class="body-text" style="margin-top: 1.5rem;">核心理念：保障和改善民生，实现群众视力从“看得见”到“看得好”的跨越。</p>
+                    </div>
+                    <div class="apple-card flex items-center justify-center gsap-item js-tilt">
+                        <i class="fa-solid fa-eye icon-large" style="margin:0; font-size: clamp(8rem, 15vw, 15rem); opacity: 0.1;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P10: 心灵之窗 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="sub-head gsap-item">精益求精：守护“心灵的窗户”</h2>
+                <div class="grid-2">
+                    <div class="apple-card gsap-item js-tilt">
+                        <i class="fa-solid fa-glasses icon-large"></i>
+                        <p class="body-lead">业务深耕</p>
+                        <p class="body-text">提升精准验光水平，钻研视光学新技术。重中之重是<strong>青少年近视防控</strong>。</p>
+                    </div>
+                    <div class="apple-card gsap-item js-tilt">
+                        <i class="fa-solid fa-child-reaching icon-large"></i>
+                        <p class="body-lead">社会价值</p>
+                        <p class="body-text">有效降低隆回县青少年近视率，为国家未来建设者护航。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P11: 优化服务 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="sub-head gsap-item">优化服务：提升就医获得感</h2>
+                <div class="grid-2">
+                    <div class="apple-card text-center gsap-item js-tilt">
+                        <div style="font-size: clamp(4rem, 6vw, 6rem); margin-bottom: 1.5rem;">👶 👴</div>
+                        <p class="body-lead">通俗易懂与耐心温情</p>
+                        <p class="body-text">面对懵懂孩童与高龄老人，用通俗语言解释视力问题，用耐心化解患者焦虑。</p>
+                    </div>
+                    <div class="apple-card text-center apple-card-dark gsap-item js-tilt" style="background: var(--accent-blue);">
+                        <i class="fa-solid fa-house-chimney-medical" style="font-size: clamp(4rem, 6vw, 6rem); color: white; margin-bottom: 1.5rem; opacity: 0.9;"></i>
+                        <p class="body-lead">我们的愿景</p>
+                        <p class="body-text" style="color: rgba(255,255,255,0.9);">让隆回百姓在家门口，就能享受到专业视光学服务。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P12: 隆医担当 -->
+        <div class="slide">
+            <div class="slide-content text-center">
+                <span class="section-tag gsap-item">第五部分：实干担当</span>
+                <h2 class="hero-title gsap-item" style="margin-bottom: 2rem;">立足邵阳实际的“隆医担当”</h2>
+                <p class="body-lead gsap-item" style="font-size: clamp(1.8rem, 3vw, 3rem); margin-bottom: 4rem;">隆回为人口大县，医院社会责任重大。</p>
+                <div class="grid-2" style="max-width: 900px; margin: 0 auto;">
+                    <div class="apple-card text-center gsap-item js-tilt" style="padding: 2rem;"><span class="body-lead" style="margin:0;">走好“实干之路”</span></div>
+                    <div class="apple-card text-center gsap-item js-tilt" style="padding: 2rem; background: #FFF5F5;"><span class="body-lead" style="margin:0; color: var(--accent-red);">守好“廉洁底线”</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P13: 实干路径 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="sub-head gsap-item">实干路径：医改方向与资源下沉</h2>
+                <div class="grid-2">
+                    <div class="apple-card gsap-item js-tilt">
+                        <div class="badge">院内革新</div>
+                        <p class="body-lead" style="font-size: clamp(2rem, 3.5vw, 3.5rem);">微创与高效</p>
+                        <p class="body-text">协助推行“日间手术”、微创化治疗，顺应医改方向。</p>
+                    </div>
+                    <div class="apple-card gsap-item js-tilt">
+                        <div class="badge" style="background: rgba(0, 150, 136, 0.1); color: #009688;">院外公益</div>
+                        <p class="body-lead" style="font-size: clamp(2rem, 3.5vw, 3.5rem);">助力乡村振兴</p>
+                        <p class="body-text">进学校、进社区义诊，推动医疗资源真实下沉。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- P14: 廉洁自律 -->
+        <div class="slide">
+            <div class="slide-content text-center">
+                <i class="fa-solid fa-scale-balanced icon-large gsap-item" style="color: var(--accent-red); font-size: clamp(5rem, 8vw, 8rem);"></i>
+                <h2 class="sub-head gsap-item" style="margin-bottom: 2rem;">风清气正的政治生态</h2>
+                <p class="body-lead gsap-item" style="font-size: clamp(1.8rem, 3vw, 3rem); margin-bottom: 3rem;">
+                    纪律准绳：严格执行医疗卫生行风建设<br><span style="color: var(--accent-red);">“九项准则”</span>
+                </p>
+                <div class="apple-card gsap-item js-tilt" style="display: inline-block; padding: 2rem 4rem;">
+                    <p class="body-lead" style="margin: 0; color: var(--accent-red);">没有廉洁的环境，就没有真正的医疗现代化。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- P15: 结语 -->
+        <div class="slide">
+            <div class="slide-content text-center">
+                <span class="section-tag gsap-item">第六部分：总结与表态</span>
+                <h2 class="hero-title gsap-item">留下坚实的脚印。</h2>
+                <div class="grid-3" style="max-width: 1000px; margin: 4rem auto;">
+                    <div class="apple-card text-center gsap-item js-tilt" style="border-radius: 100px; padding: 2rem;"><span class="body-lead" style="font-size: clamp(2.5rem, 4vw, 4rem); margin:0;">闯 <span style="font-size: clamp(1rem, 1.5vw, 1.5rem); color: var(--text-body); font-weight: normal;">的精神</span></span></div>
+                    <div class="apple-card text-center gsap-item js-tilt" style="border-radius: 100px; padding: 2rem;"><span class="body-lead" style="font-size: clamp(2.5rem, 4vw, 4rem); margin:0;">创 <span style="font-size: clamp(1rem, 1.5vw, 1.5rem); color: var(--text-body); font-weight: normal;">的劲头</span></span></div>
+                    <div class="apple-card text-center gsap-item js-tilt" style="border-radius: 100px; padding: 2rem;"><span class="body-lead" style="font-size: clamp(2.5rem, 4vw, 4rem); margin:0;">干 <span style="font-size: clamp(1rem, 1.5vw, 1.5rem); color: var(--text-body); font-weight: normal;">的作风</span></span></div>
+                </div>
+                <p class="body-lead gsap-item highlight" style="font-size: clamp(2rem, 3.5vw, 3.5rem);">
+                    为邵阳贡献隆回力量，为隆回贡献卫健力量！
+                </p>
+                <p class="body-text gsap-item" style="margin-top: 2rem; color: var(--text-light);">
+                    两个践行：在支部做好桥梁纽带 &bull; 在岗位磨练钉钉子精神
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // === 1. GSAP 页面切换与入场动画逻辑 ===
+        const slides = document.querySelectorAll('.slide');
+        const dotsContainer = document.getElementById('dots');
+        let currentIdx = 0;
+        let isAnimating = false;
+
+        // 初始化指示点
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = `dot ${i === 0 ? 'active' : ''}`;
+            dot.onclick = () => jumpTo(i);
+            dotsContainer.appendChild(dot);
+        });
+        const dots = document.querySelectorAll('.dot');
+
+        // 初始化 GSAP 状态
+        gsap.set('.slide', { opacity: 0, visibility: 'hidden' });
+        gsap.set(slides[0], { opacity: 1, visibility: 'visible' });
+
+        // 播放特定页面的入场动画
+        function playEntryAnimation(slideIndex) {
+            const slide = slides[slideIndex];
+            const items = slide.querySelectorAll('.gsap-item');
+            
+            // GSAP 弹性错落动画 (Stagger)
+            gsap.fromTo(items, 
+                { y: 60, opacity: 0 }, 
+                { 
+                    y: 0, 
+                    opacity: 1, 
+                    duration: 0.8, 
+                    stagger: 0.15, // 每个元素延迟 0.15s 入场
+                    ease: "back.out(1.2)", // 带有轻微回弹的阻尼曲线
+                    clearProps: "transform"
+                }
+            );
+        }
+
+        // 初始播放第一页
+        playEntryAnimation(0);
+
+        function updateSlides(newIdx) {
+            if (isAnimating || newIdx === currentIdx) return;
+            isAnimating = true;
+
+            const currentSlide = slides[currentIdx];
+            const nextSlide = slides[newIdx];
+
+            // 更新指示点 (使用 GSAP 动画化宽度变化)
+            dots.forEach((dot, i) => {
+                if(i === newIdx) {
+                    dot.classList.add('active');
+                    gsap.to(dot, { width: 28, backgroundColor: "#1D1D1F", duration: 0.4 });
+                } else {
+                    dot.classList.remove('active');
+                    gsap.to(dot, { width: 10, backgroundColor: "rgba(0,0,0,0.15)", duration: 0.4 });
+                }
+            });
+
+            // 切换幻灯片
+            gsap.to(currentSlide, {
+                opacity: 0,
+                duration: 0.4,
+                onComplete: () => {
+                    gsap.set(currentSlide, { visibility: 'hidden' });
+                    
+                    currentIdx = newIdx;
+                    gsap.set(nextSlide, { visibility: 'visible' });
+                    
+                    // 淡入新一页，并触发其内部元素的顺序动画
+                    gsap.to(nextSlide, {
+                        opacity: 1,
+                        duration: 0.4,
+                        onComplete: () => {
+                            playEntryAnimation(newIdx);
+                            isAnimating = false;
+                        }
+                    });
+                }
+            });
+        }
+
+        function next() { if (currentIdx < slides.length - 1) updateSlides(currentIdx + 1); }
+        function prev() { if (currentIdx > 0) updateSlides(currentIdx - 1); }
+        function jumpTo(i) { updateSlides(i); }
+
+        document.getElementById('nextBtn').onclick = next;
+        document.getElementById('prevBtn').onclick = prev;
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') next();
+            else if (e.key === 'ArrowLeft' || e.key === 'PageUp') prev();
+        });
+
+
+        // === 2. 原生 JS 驱动的 3D 卡片悬浮视差动效 (Tilt Effect) ===
+        const tiltCards = document.querySelectorAll('.js-tilt');
+        
+        tiltCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                // 获取卡片的位置和尺寸
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; // 鼠标在卡片内的 X 坐标
+                const y = e.clientY - rect.top;  // 鼠标在卡片内的 Y 坐标
+                
+                // 计算旋转中心
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // 计算倾斜角度 (系数可调，当前设置为最大倾斜 6 度)
+                const rotateX = ((y - centerY) / centerY) * -6; 
+                const rotateY = ((x - centerX) / centerX) * 6;
+                
+                // 应用 JS 动态转换
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            
+            // 鼠标移出时恢复原状
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+            });
+        });
+    </script>
+</body>
 </html>
